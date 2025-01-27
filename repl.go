@@ -6,9 +6,17 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/Sleeper21/pokedexcli/internal/pokeapi"
 )
 
-func startRepl() {
+type config struct {
+	pokeapiClient        pokeapi.Client
+	nextLocationsURL     *string
+	previousLocationsURL *string
+}
+
+func startRepl(cfg *config) {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
@@ -21,6 +29,7 @@ func startRepl() {
 		words, err := cleanInput(input)
 		if err != nil {
 			fmt.Println(err)
+			continue
 		}
 		commandName := words[0]
 
@@ -33,7 +42,7 @@ func startRepl() {
 			continue
 		}
 		// Executes the corresponding function
-		err = cmd.callback()
+		err = cmd.callback(cfg)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -46,6 +55,14 @@ func startRepl() {
 
 }
 
+// a struct type that describes a command
+type cliCommand struct {
+	name        string
+	description string
+	callback    func(*config) error
+}
+
+// Map all commands supported to the specifications of each one
 func getCommands() map[string]cliCommand {
 	return map[string]cliCommand{
 		"exit": {
@@ -57,6 +74,16 @@ func getCommands() map[string]cliCommand {
 			name:        "help",
 			description: "Displays a help message",
 			callback:    commandHelp,
+		},
+		"map": {
+			name:        "map",
+			description: "Displays the next 20 locations.",
+			callback:    commandMap,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Displays the previous 20 locations.",
+			callback:    commandMapb,
 		},
 	}
 }

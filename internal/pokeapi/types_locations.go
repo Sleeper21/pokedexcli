@@ -1,0 +1,12 @@
+package pokeapi
+
+// Struct to store the locations data received from the api
+type Locations struct {
+	Count    int     `json:"count"`
+	Next     *string `json:"next"`
+	Previous *string `json:"previous"`
+	Results  []struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"results"`
+}
