@@ -31,18 +31,19 @@ func startRepl(cfg *config) {
 			fmt.Println(err)
 			continue
 		}
-		commandName := words[0]
+		firstWord := words[0]
 
 		// Check if it a supported command
 		// loop through the map and look if the key exists
 		// If exists, call the callback
-		cmd, exists := getCommands()[commandName]
+		cmd, exists := getCommands()[firstWord]
 		if !exists {
 			fmt.Println("Unknown command")
 			continue
 		}
+
 		// Executes the corresponding function
-		err = cmd.callback(cfg)
+		err = cmd.callback(cfg, words)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -59,7 +60,7 @@ func startRepl(cfg *config) {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, []string) error
 }
 
 // Map all commands supported to the specifications of each one
@@ -84,6 +85,11 @@ func getCommands() map[string]cliCommand {
 			name:        "mapb",
 			description: "Displays the previous 20 locations.",
 			callback:    commandMapb,
+		},
+		"explore": {
+			name:        "explore",
+			description: "Displays the Pokemon that can be found in a location. eg: explore pastoria-city-area",
+			callback:    commandExplore,
 		},
 	}
 }
