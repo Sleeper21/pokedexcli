@@ -34,7 +34,7 @@ func startRepl(cfg *config) {
 		commandName := words[0]
 
 		// Check if it a supported command
-		// loop throught the map and look if the key exists
+		// loop through the map and look if the key exists
 		// If exists, call the callback
 		cmd, exists := getCommands()[commandName]
 		if !exists {

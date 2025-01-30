@@ -2,6 +2,7 @@ package pokeapi
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -14,6 +15,22 @@ func (c *Client) GetLocations(pageURL *string) (Locations, error) {
 		url = *pageURL
 	}
 
+	// Check cached data first
+	//then we check if the URL is in the cache
+	cachedData, exists := c.pokeLocalCache.Get(url)
+	if exists {
+		// Unmarshal the data stored in the cache
+		areas := Locations{}
+		err := json.Unmarshal(cachedData, &areas)
+		if err != nil {
+			return Locations{}, err
+		}
+		fmt.Println("Data retrieved from cache")
+		return areas, nil
+	}
+
+	// If not in cache, make the request
+	fmt.Println("Data retrieved from API")
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return Locations{}, err
@@ -32,6 +49,9 @@ func (c *Client) GetLocations(pageURL *string) (Locations, error) {
 	if err != nil {
 		return Locations{}, err
 	}
+
+	// Add the data to the cache
+	c.pokeLocalCache.Add(url, data)
 
 	//Unmarshal the data
 	areas := Locations{}
