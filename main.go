@@ -11,6 +11,7 @@ func main() {
 
 	cfg := &config{
 		pokeapiClient: pokeClient,
+		userPokedex:   map[string]pokeapi.Pokemon{}, // Initialize the pokedex map
 	}
 
 	startRepl(cfg)
